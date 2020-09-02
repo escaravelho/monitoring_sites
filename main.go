@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 func main() {
 
@@ -17,6 +20,10 @@ func main() {
 		fmt.Println("Show logs...")
 	case 0:
 		fmt.Println("Exit program...")
+		os.Exit(0)
+	default:
+		fmt.Println("Error! Option choosed is unavailable.")
+		os.Exit(-1)
 	}
 }
 
