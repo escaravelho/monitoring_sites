@@ -3,27 +3,31 @@ package main
 import (
 	"fmt"
 	"os"
+	"net/http"
 )
 
 func main() {
 
 	showIntro()
 
-	showMenu()
+	for {
+		showMenu()
 
-	command := captureCommand()
+		command := captureCommand()
 
-	switch command {
-	case 1:
-		fmt.Println("Monitoring...")
-	case 2:
-		fmt.Println("Show logs...")
-	case 0:
-		fmt.Println("Exit program...")
-		os.Exit(0)
-	default:
-		fmt.Println("Error! Option choosed is unavailable.")
-		os.Exit(-1)
+		switch command {
+		case 1:
+			startMonitor()
+		case 2:
+			fmt.Println("Show logs...")
+		case 0:
+			fmt.Println("Exit program...")
+			os.Exit(0)
+		default:
+			fmt.Println("Error! Option choosed is unavailable.")
+			os.Exit(-1)
+		}
+	
 	}
 }
 
@@ -48,4 +52,16 @@ func captureCommand() int {
 	fmt.Scan(&command)
 	fmt.Println("The command that you choosed is", command)
 	return command
+}
+
+func startMonitor() {
+	fmt.Println("Monitoring...")
+	site := "https://www.alura.com.br"
+	response, _ := http.Get(site)
+
+	if response.StatusCode == 200 {
+		fmt.Println("The website: ", site, "is works fine!")
+	} else {
+		fmt.Println("The website: ", site, "is not work!")
+	}
 }
