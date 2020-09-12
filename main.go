@@ -29,6 +29,7 @@ func main() {
 		}
 	
 	}
+
 }
 
 func showIntro() {
@@ -56,12 +57,17 @@ func captureCommand() int {
 
 func startMonitor() {
 	fmt.Println("Monitoring...")
-	site := "https://www.alura.com.br"
-	response, _ := http.Get(site)
 
-	if response.StatusCode == 200 {
-		fmt.Println("The website: ", site, "is works fine!")
-	} else {
-		fmt.Println("The website: ", site, "is not work!")
+	sites := [] string{"https://www.alura.com.br", "https://www.caelum.com.br", "https://www.campuscode.com.br"}
+
+	for _, site := range sites {
+		
+		response, _ := http.Get(site)
+		
+		if response.StatusCode == 200 {
+			fmt.Println("The website ", site, "is works fine!")
+		} else {
+			fmt.Println("The website ", site, "is not work!")
+		}
 	}
 }
