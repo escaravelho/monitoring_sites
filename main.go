@@ -1,10 +1,13 @@
 package main
 
 import (
+	"strings"
+	"io"
 	"fmt"
 	"os"
 	"net/http"
 	"time"
+	"bufio"
 )
 
 const timesToMonitor = 2
@@ -57,10 +60,36 @@ func captureCommand() int {
 	return command
 }
 
-func startMonitor() {
-	fmt.Println("Monitoring...")
+func readSitesFileToMonitor() [] string {
+	
+	var sites []string 
+	file, error := os.Open("sites.properties")
 
-	sites := [] string{"https://www.alura.com.br", "https://www.caelum.com.br", "https://www.campuscode.com"}
+	if error != nil {
+		fmt.Println("Error to open sites file")
+	}
+
+	reader := bufio.NewReader(file)
+	
+	for {
+		fileLine, error := reader.ReadString('\n')
+
+		if error == io.EOF {
+			break
+		}
+		
+		fileLine = strings.TrimSpace(fileLine)
+		sites = append(sites, fileLine)
+	}
+	file.Close()
+
+	return sites
+}
+
+func startMonitor() {
+
+	fmt.Println("Monitoring...")
+	sites := readSitesFileToMonitor()
 
 	for tentative := 1; tentative <= timesToMonitor; tentative++ {
 		
@@ -79,9 +108,7 @@ func startMonitor() {
 			}
 			
 			fmt.Println("Waiting",delayToNextMonitoring,"seconds to monitoring next site...")
-			
 			time.Sleep(delayToNextMonitoring * time.Second)
-
 			fmt.Println("\n")
 		}
 	}  
