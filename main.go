@@ -4,7 +4,11 @@ import (
 	"fmt"
 	"os"
 	"net/http"
+	"time"
 )
+
+const timesToMonitor = 2
+const delayToNextMonitoring = 2
 
 func main() {
 
@@ -27,9 +31,7 @@ func main() {
 			fmt.Println("Error! Option choosed is unavailable.")
 			os.Exit(-1)
 		}
-	
 	}
-
 }
 
 func showIntro() {
@@ -58,16 +60,29 @@ func captureCommand() int {
 func startMonitor() {
 	fmt.Println("Monitoring...")
 
-	sites := [] string{"https://www.alura.com.br", "https://www.caelum.com.br", "https://www.campuscode.com.br"}
+	sites := [] string{"https://www.alura.com.br", "https://www.caelum.com.br", "https://www.campuscode.com"}
 
-	for _, site := range sites {
+	for tentative := 1; tentative <= timesToMonitor; tentative++ {
 		
-		response, _ := http.Get(site)
-		
-		if response.StatusCode == 200 {
-			fmt.Println("The website ", site, "is works fine!")
-		} else {
-			fmt.Println("The website ", site, "is not work!")
+		fmt.Println("Initializing the",tentative,"º tentative to monitor sites...\n")
+
+		for _, site := range sites {
+				
+			response, error := http.Get(site)
+
+			if error != nil {
+				fmt.Println("Error to do a request to website", site)
+			} else if response.StatusCode == 200 {
+				fmt.Println("The website:",site,"is works fine!")
+			} else {
+				fmt.Println("The website:",site,"is not work!")
+			}
+			
+			fmt.Println("Waiting",delayToNextMonitoring,"seconds to monitoring next site...")
+			
+			time.Sleep(delayToNextMonitoring * time.Second)
+
+			fmt.Println("\n")
 		}
-	}
+	}  
 }
