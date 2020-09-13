@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 	"bufio"
+	"io/ioutil"
 )
 
 const timesToMonitor = 2
@@ -26,7 +27,7 @@ func main() {
 		case 1:
 			startMonitor()
 		case 2:
-			fmt.Println("Show logs...")
+			showLogs()
 		case 0:
 			fmt.Println("Exit program...")
 			os.Exit(0)
@@ -128,4 +129,17 @@ func writeLog(site string, status bool) {
 	}
 
 	file.Close()
+}
+
+func showLogs() {
+
+	fmt.Println("Show logs...")
+
+	file, error := ioutil.ReadFile("monitoring_sites.log")
+
+	if error != nil {
+		fmt.Println("Error to open file monitoring_sites.log")
+	}
+
+	fmt.Println(string(file))
 }
