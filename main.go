@@ -73,7 +73,6 @@ func readSitesFileToMonitor() [] string {
 	
 	for {
 		fileLine, error := reader.ReadString('\n')
-
 		if error == io.EOF {
 			break
 		}
@@ -96,20 +95,37 @@ func startMonitor() {
 		fmt.Println("Initializing the",tentative,"º tentative to monitor sites...\n")
 
 		for _, site := range sites {
-				
 			response, error := http.Get(site)
-
 			if error != nil {
 				fmt.Println("Error to do a request to website", site)
 			} else if response.StatusCode == 200 {
-				fmt.Println("The website:",site,"is works fine!")
+				writeLog(site, true)
 			} else {
-				fmt.Println("The website:",site,"is not work!")
+				writeLog(site, false)
 			}
 			
 			fmt.Println("Waiting",delayToNextMonitoring,"seconds to monitoring next site...")
 			time.Sleep(delayToNextMonitoring * time.Second)
-			fmt.Println("\n")
+			fmt.Println()
 		}
 	}  
+}
+
+func writeLog(site string, status bool) {
+
+	timeLogFormat := time.Now().Format("02/01/2006 15:04:05")
+
+	file, error := os.OpenFile("monitoring_sites.log", os.O_APPEND|os.O_RDWR|os.O_CREATE, 0666)
+
+	if error != nil {
+		fmt.Println("Problem")
+	}
+
+	if status == true {
+		file.WriteString(timeLogFormat + " - The website "+site+" is online\n")
+	} else {
+		file.WriteString(timeLogFormat + " - The website "+site+" is offline\n")	
+	}
+
+	file.Close()
 }
